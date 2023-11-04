@@ -12,6 +12,8 @@ import { ProductService } from 'src/app/services/product.service';
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
   currentCategoryId: number = 1;
+  currentCategoryName: string = "";
+  
   constructor(private productService: ProductService, private route: ActivatedRoute) { }
   
   ngOnInit(): void {
@@ -26,10 +28,13 @@ export class ProductListComponent implements OnInit {
     if (hasCategoryId) {
       // Get 'id', convert string to number using +; ! informs compiler object is not null
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
+      // Get 'name'
+      this.currentCategoryName = this.route.snapshot.paramMap.get('name')!;
     }
     else {
       // default to category 1
       this.currentCategoryId = 1;
+      this.currentCategoryName = 'Error: Missing';
     }
     this.productService.getProductList(this.currentCategoryId).subscribe(
         data => {
