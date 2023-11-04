@@ -13,6 +13,7 @@ export class ProductListComponent implements OnInit {
   products: Product[] = [];
   currentCategoryId: number = 1;
   currentCategoryName: string = "";
+  searchMode: boolean = false;
   
   constructor(private productService: ProductService, private route: ActivatedRoute) { }
   
@@ -23,6 +24,26 @@ export class ProductListComponent implements OnInit {
   }
 
   listProducts() {
+    this.searchMode = this.route.snapshot.paramMap.has('keyword');
+    if (this.searchMode) {
+      this.handleSearchProducts();
+    }
+    else {
+      this.handleListProducts();
+    }
+  }
+
+  handleSearchProducts() {
+    const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
+    // Search product using keyword
+    this.productService.searchProducts(theKeyword).subscribe(
+      data => {
+        this.products = data;
+      }
+    )
+  }
+
+  handleListProducts() {
     // Check if "if" avaiable
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
     if (hasCategoryId) {
@@ -34,7 +55,8 @@ export class ProductListComponent implements OnInit {
     else {
       // default to category 1
       this.currentCategoryId = 1;
-      this.currentCategoryName = 'Error: Missing';
+      // Update this to reflect appropriate name for given category ID if modified
+      this.currentCategoryName = 'Books';
     }
     this.productService.getProductList(this.currentCategoryId).subscribe(
         data => {
@@ -42,4 +64,6 @@ export class ProductListComponent implements OnInit {
         }
       )
   }
+
+
 }
